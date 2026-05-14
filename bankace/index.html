@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BankAce — Banking Exam Prep Platform</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css" />
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- TOP BAR -->
+    <header class="topbar">
+      <div class="logo">Bank<span>Ace</span>
+        <span class="logo-sub">· IBPS / SBI / RBI</span>
+      </div>
+      <div class="topright">
+        <div class="streak-pill"><i class="ti ti-flame"></i> 5 day streak</div>
+        <div class="pill pill-green">Accuracy: 64%</div>
+        <div class="pill pill-blue">Mock rank: #248</div>
+      </div>
+    </header>
+
+    <!-- NAV -->
+    <nav class="nav" id="main-nav">
+      <button class="nb active" data-tab="home"><i class="ti ti-layout-dashboard"></i> Dashboard</button>
+      <button class="nb" data-tab="quiz"><i class="ti ti-brain"></i> Topic Quiz</button>
+      <button class="nb" data-tab="mock"><i class="ti ti-file-text"></i> Mock Paper</button>
+      <button class="nb" data-tab="pyq"><i class="ti ti-history"></i> PYQ Analysis</button>
+      <button class="nb" data-tab="analysis"><i class="ti ti-chart-bar"></i> My Analysis</button>
+      <button class="nb" data-tab="resources"><i class="ti ti-book"></i> Free Resources</button>
+    </nav>
+
+    <!-- SECTIONS -->
+    <main id="main-content">
+
+      <!-- DASHBOARD -->
+      <section class="sec on" id="s-home">
+        <div class="g4" id="home-stats"></div>
+
+        <div class="card">
+          <div class="ct"><i class="ti ti-chart-line"></i> Subject accuracy</div>
+          <div id="home-bars"></div>
+        </div>
+
+        <div class="card">
+          <div class="ct"><i class="ti ti-target"></i> Today's action plan</div>
+          <div id="action-plan"></div>
+          <div class="btn-row" style="margin-top:14px;">
+            <button class="btn-primary" data-goto="quiz">Start focused quiz ↗</button>
+            <button class="btn-outline" data-goto="mock">Take full mock</button>
+            <button class="btn-outline" data-goto="analysis">View full analysis</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="ct"><i class="ti ti-calendar"></i> Upcoming exam dates</div>
+          <div id="exam-dates"></div>
+        </div>
+      </section>
+
+      <!-- QUIZ -->
+      <section class="sec" id="s-quiz">
+        <div class="card" id="quiz-config">
+          <div class="ct"><i class="ti ti-settings"></i> Configure topic quiz</div>
+          <div class="g2">
+            <div>
+              <div class="fl">Exam</div>
+              <select id="q-exam">
+                <option>IBPS PO</option><option>IBPS Clerk</option>
+                <option>SBI PO</option><option>SBI Clerk</option>
+                <option>RBI Grade B</option><option>RBI Assistant</option>
+              </select>
+            </div>
+            <div>
+              <div class="fl">Section</div>
+              <select id="q-sec" onchange="updateTopics()">
+                <option>Reasoning Ability</option>
+                <option>Quantitative Aptitude</option>
+                <option>English Language</option>
+                <option>General Awareness</option>
+                <option>Computer Aptitude</option>
+              </select>
+            </div>
+            <div>
+              <div class="fl">Topic</div>
+              <select id="q-topic"></select>
+            </div>
+            <div>
+              <div class="fl">Difficulty</div>
+              <select id="q-diff">
+                <option>Mixed (recommended)</option>
+                <option>Easy</option>
+                <option>Medium</option>
+                <option>Hard (Mains level)</option>
+              </select>
+            </div>
+            <div>
+              <div class="fl">No. of questions</div>
+              <select id="q-cnt">
+                <option>10</option><option>20</option><option>30</option>
+              </select>
+            </div>
+            <div>
+              <div class="fl">Time mode</div>
+              <select id="q-time">
+                <option>Practice (no timer)</option>
+                <option>Timed (1.2 min/q)</option>
+                <option>Speed drill (45 sec/q)</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-primary" id="start-quiz-btn">Generate AI Quiz ↗</button>
+        </div>
+
+        <div id="quiz-area" class="hidden">
+          <div class="quiz-meta">
+            <span class="quiz-counter">Question <span id="qn">1</span> / <span id="qt">5</span></span>
+            <div class="quiz-tags">
+              <span class="tag tag-blue" id="qtag-sec">Reasoning</span>
+              <span class="tag tag-amber" id="qtag-diff">Medium</span>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:0;">
+            <div class="quiz-q" id="qtext"></div>
+            <div id="qopts"></div>
+            <div class="feedback-box" id="qfb"></div>
+            <div class="btn-row" style="margin-top:14px;">
+              <button class="btn-primary" id="btn-check">Check answer</button>
+              <button class="btn-outline hidden" id="btn-next">Next →</button>
+              <button class="btn-outline" id="btn-skip">Skip</button>
+            </div>
+          </div>
+          <div class="card hidden" id="quiz-result">
+            <div class="ct"><i class="ti ti-trophy"></i> Quiz complete!</div>
+            <div id="quiz-result-summary"></div>
+            <div class="btn-row" style="margin-top:12px;">
+              <button class="btn-primary" id="btn-more-practice">More practice ↗</button>
+              <button class="btn-outline" data-goto="analysis">View analysis</button>
+              <button class="btn-outline" id="btn-new-quiz">New quiz</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MOCK PAPER -->
+      <section class="sec" id="s-mock">
+        <div class="exam-tabs" id="mock-exam-tabs">
+          <button class="etb active" data-exam="IBPS PO">IBPS PO</button>
+          <button class="etb" data-exam="IBPS Clerk">IBPS Clerk</button>
+          <button class="etb" data-exam="SBI PO">SBI PO</button>
+          <button class="etb" data-exam="SBI Clerk">SBI Clerk</button>
+          <button class="etb" data-exam="RBI Grade B">RBI Grade B</button>
+        </div>
+        <div class="card">
+          <div class="ct"><i class="ti ti-file-description"></i> Mock paper generator — <span id="mock-exam-label" class="accent">IBPS PO</span></div>
+          <p class="info-text" id="mock-info"></p>
+          <div class="g2">
+            <div>
+              <div class="fl">Paper type</div>
+              <select id="mock-type">
+                <option>Prelims (Full)</option><option>Mains (Full)</option>
+                <option>Section-wise</option><option>AI-predicted pattern</option>
+              </select>
+            </div>
+            <div>
+              <div class="fl">Pattern source</div>
+              <select id="mock-src">
+                <option>Previous year 2024</option><option>Previous year 2023</option>
+                <option>AI-predicted 2025</option><option>Mixed (2020–2024)</option>
+              </select>
+            </div>
+            <div>
+              <div class="fl">Language</div>
+              <select><option>English</option></select>
+            </div>
+            <div>
+              <div class="fl">Negative marking</div>
+              <select><option>Yes (–0.25)</option><option>No</option></select>
+            </div>
+          </div>
+          <div class="btn-row">
+            <button class="btn-primary" id="gen-mock-btn">Generate full mock paper ↗</button>
+            <button class="btn-outline" id="gen-sectional-btn">Sectional test ↗</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ct"><i class="ti ti-list-check"></i> Previous mock attempts</div>
+          <div id="mock-attempts"></div>
+        </div>
+      </section>
+
+      <!-- PYQ ANALYSIS -->
+      <section class="sec" id="s-pyq">
+        <div class="exam-tabs" id="pyq-exam-tabs">
+          <button class="etb active" data-exam="IBPS PO">IBPS PO</button>
+          <button class="etb" data-exam="SBI PO">SBI PO</button>
+          <button class="etb" data-exam="RBI Grade B">RBI Grade B</button>
+          <button class="etb" data-exam="IBPS Clerk">IBPS Clerk</button>
+        </div>
+        <div class="card">
+          <div class="ct"><i class="ti ti-chart-bar"></i> Topic frequency — last 5 years</div>
+          <div id="pyq-bars"></div>
+        </div>
+        <div class="card">
+          <div class="ct"><i class="ti ti-bulb"></i> AI pattern prediction for 2025</div>
+          <div id="pyq-predict"></div>
+          <div class="btn-row" style="margin-top:12px;">
+            <button class="btn-primary" id="gen-predicted-btn">Generate predicted paper ↗</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ANALYSIS -->
+      <section class="sec" id="s-analysis">
+        <div class="card">
+          <div class="ct"><i class="ti ti-chart-radar"></i> Weak area diagnosis</div>
+          <div id="weak-list"></div>
+        </div>
+        <div class="card">
+          <div class="ct"><i class="ti ti-road"></i> Personalized improvement roadmap</div>
+          <div id="roadmap-list"></div>
+          <div class="btn-row" style="margin-top:14px;">
+            <button class="btn-primary" id="gen-plan-btn">Generate 60-day plan ↗</button>
+            <button class="btn-outline" id="speed-btn">Improve speed ↗</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ct"><i class="ti ti-clock"></i> Time management analysis</div>
+          <div id="time-analysis"></div>
+        </div>
+      </section>
+
+      <!-- RESOURCES -->
+      <section class="sec" id="s-resources">
+        <div class="card">
+          <div class="ct"><i class="ti ti-filter"></i> Filter resources</div>
+          <div class="g2">
+            <div>
+              <div class="fl">Section</div>
+              <select id="res-sec">
+                <option value="all">All sections</option>
+                <option value="reasoning">Reasoning Ability</option>
+                <option value="quant">Quantitative Aptitude</option>
+                <option value="english">English Language</option>
+                <option value="ga">General Awareness / Banking</option>
+                <option value="computer">Computer Aptitude</option>
+              </select>
+            </div>
+            <div>
+              <div class="fl">Resource type</div>
+              <select id="res-type">
+                <option value="all">All types</option>
+                <option value="yt">YouTube</option>
+                <option value="web">Website / App</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ct"><i class="ti ti-star"></i> Curated free resources</div>
+          <div id="res-list"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/quiz.js"></script>
+  <script src="js/mock.js"></script>
+  <script src="js/pyq.js"></script>
+  <script src="js/analysis.js"></script>
+  <script src="js/resources.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
